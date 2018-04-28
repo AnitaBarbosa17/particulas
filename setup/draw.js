@@ -61,9 +61,33 @@ function animate() {
 var Particle = function(args){
 	//por si no pasan los argumentos pasar
 	if(args === undefined) args = {};
-	this.x = args.x || (Math.random() * window.innerWidth);
-	this.y = args.y || (Math.random() * window.innerHeight);
-	this.radius = args.radius || (Math.random() * 10);
+	this.position = {
+		x: args.x || (Math.random() * window.innerWidth),
+		y: args.y || (Math.random() * window.innerHeight),
+	}
+	this.velocity = {x: Math.random() * 0.5};
+	this.radius = args.radius || (Math.random() * 2);
+	/*
+	ctx esta sustituyendo a contexto como tal, 
+	la teoría dice que no deberíamos de usar un objeto global dentro de una clase,
+	por eso sustitumos contexto por ctx 
+	*/
+	this.draw = function(ctx) {
+		this.update();
+		ctx.beginPath();
+		ctx.arc(this.position.x, this.position.y, this.radius, PI2, false);
+		ctx.fill();
+		ctx.fillStyle = "white";
+		ctx.closePath();
+	}
+	//Actualizar la posición de X
+	this.update = function() {
+		this.position.x += this.velocity.x;
+		//funciona para que cuando llegue al final de la pantalla regrese a position 0
+		if(this.position.x > window.innerWidth) {
+			this.position.x = 0
+		}
+	}
 	return this;
 }
 
@@ -78,10 +102,7 @@ function render() {
 	for(var i = 0; i < particles.length; i++){
 		//recorre el arreglo sobre el index
 		var particle = particles[i];
-		context.beginPath();
-		context.arc(particle.x, particle.y, particle.radius, PI2, false);
-		context.fill();
-		context.closePath();
+		particle.draw(context);
 	}
 	
 	
